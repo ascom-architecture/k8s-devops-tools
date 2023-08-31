@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-devops-tools
+  namespace: dev-tools
+  labels:
+    app: k8s-devops-tools
+spec:
+  selector:
+    matchLabels:
+      app: k8s-devops-tools
+  replicas: 1
+  template:
+    namespace: dev-tools
+    metadata:
+      labels:
+        app: k8s-devops-tools
+    spec:
+      containers:
+        - name: k8s-devops-tools
+          image: janben/k8s-devops-tools
+          resources:
+            limits:
+              memory: "500Mi"
+              cpu: "500m"
+          imagePullPolicy: "IfNotPresent"
+          ports:
+          - containerPort: 80
+            name: http
+          - containerPort: 443
+            name: https
+          - containerPort: 1433
+            name: ms-sql-s
+          volumeMounts:
+          - name: k8sdevtools-webroot-data-volume
+            mountPath: /var/www/html
+            subPath: html
+          - name: k8sdevtools-conf-data-volume
+            mountPath: /etc/nginx/conf.d
+            subPath: conf.d
+          - name: k8sdevtools-streamconf-data-volume
+            mountPath: /etc/nginx/stream-conf.d
+            subPath: stream-conf.d
+          - name: k8sdevtools-certs-data-volume
+            mountPath: /etc/nginx/certs
+            subPath: certs
+      volumes:
+        - name: k8sdevtools-webroot-data-volume
+          persistentVolumeClaim:
+            claimName: k8sdevtools-webroot-data-volume-claim
+        - name: k8sdevtools-conf-data-volume
+          persistentVolumeClaim:
+            claimName: k8sdevtools-conf-data-volume-claim
+        - name: k8sdevtools-streamconf-data-volume
+          persistentVolumeClaim:
+            claimName: k8sdevtools-streamconf-data-volume-claim
+        - name: k8sdevtools-certs-data-volume
+          persistentVolumeClaim:
+            claimName: k8sdevtools-certs-data-volume-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-devops-tools
+  namespace: dev-tools
+  labels:
+    app: k8s-devops-tools
+spec:
+  type: ClusterIP
+  selector:
+   app: k8s-devops-tools
+  ports:
+   - port: 80
+     name: http
+     targetPort: 80
+   - port: 443
+     name: https
+     targetPort: 443
+   - port: 1433
+     name: ms-sql-s
+     targetPort: 1433
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: k8sdevtools-webroot-data-volume-claim
+  namespace: dev-tools
+spec:
+  resources:
+    requests:
+      storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/var/www/html"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: k8sdevtools-conf-data-volume-claim
+  namespace: dev-tools
+spec:
+  resources:
+    requests:
+      storage: 1Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/etc/nginx/conf.d"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: k8sdevtools-streamconf-data-volume-claim
+  namespace: dev-tools
+spec:
+  resources:
+    requests:
+      storage: 1Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/etc/nginx/stream-conf.d"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: k8sdevtools-certs-data-volume-claim
+  namespace: dev-tools
+spec:
+  resources:
+    requests:
+      storage: 1Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/etc/nginx/certs"

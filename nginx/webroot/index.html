@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1 id="k8s-containerized-devops-toolkit">K8S Containerized DevOps Toolkit</h1>
+    <h2 id="functionality-instruction">Functionality &amp; Instruction</h2>
+    <h3 id="web-server">Web Server</h3>
+    <p>The web site can be reached using port 80 or 443. Modify the contents in the (redirected) folder /var/www/html. </p>
+    <h3 id="ms-sql-client">MS SQL Client</h3>
+    <p>There is a MS SQl Server client (mssql-tools18) installed. Use the command &#39;sqlcmd&#39; to access a SQL Server instance.</p>
+    <p>Example: </p>
+    <pre><code><span class="hljs-attribute">sqlcmd</span> -S HOSTNAME_OF_SQLSERVER -U USERNAME -P <span class="hljs-string">'PASSWORD'</span>
+    </code></pre><h3 id="tcp-proxy">TCP Proxy</h3>
+    <p>The nginx instance can be used as a TCP proxy, for instance to access a remote SQL Server instance. Place configuration files in the (redirected) folder /etc/nginx/stream-conf.d.</p>
+    
+</body>
+</html>
